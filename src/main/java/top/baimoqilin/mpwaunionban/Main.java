@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
 
-public class UnionBanPlugin extends JavaPlugin {
+public class Main extends JavaPlugin {
     private Connection connection;
     private String host, port, database, username, password, fromServer;
     private int banCheckInterval;
@@ -45,7 +45,7 @@ public class UnionBanPlugin extends JavaPlugin {
         username = getConfig().getString("database.username");
         password = getConfig().getString("database.password");
         banCheckInterval = getConfig().getInt("banCheckInterval") * 20; // Convert to ticks (20 ticks = 1 second)
-        fromServer = getConfig().getInt("from");
+        fromServer = getConfig().getString("from");
     }
 
     private void connectToDatabase() {
@@ -98,11 +98,7 @@ public class UnionBanPlugin extends JavaPlugin {
     }
 
     private void checkForBannedPlayers() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!isPlayerBanned(player)) {
-                player.kickPlayer("You are banned."); // Modify as needed
-            }
-        }
+        // 未完成
     }
 
     private boolean isPlayerBanned(Player player) {
