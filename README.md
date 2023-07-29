@@ -1,6 +1,6 @@
 # UnionBanPlugin
 
-UnionBanPlugin 是一个 Bukkit 插件，使用 MySQL 数据库在多个服务器之间禁止玩家。
+UnionBanPlugin 是一个 Bukkit 插件，使用 MySQL 数据库在多个服务器之间云封禁玩家。
 
 ## 安装
 
