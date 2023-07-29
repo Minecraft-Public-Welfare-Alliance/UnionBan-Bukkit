@@ -7,7 +7,7 @@
 
     <groupId>top.baimoqilin.mpwaunionban</groupId>
     <artifactId>MPWAUnionBan</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <description>MPWA联盟联合封禁 Bukkit版</description>
 
     <repositories>

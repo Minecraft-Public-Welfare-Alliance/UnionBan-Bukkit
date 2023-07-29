@@ -12,7 +12,7 @@ import java.sql.*;
 public class Main extends JavaPlugin {
     private Connection connection;
     private String host, port, database, username, password, fromServer;
-    private int banCheckInterval;
+    private int banCheckInterval, int_isOnline;
 
     @Override
     public void onEnable() {
@@ -82,13 +82,19 @@ public class Main extends JavaPlugin {
     }
 
     private void addRow(String ID, String IP, int Reason, String Reason_Text, boolean isOnline, String From) {
+        if (isOnline) {
+            int_isOnline = 1
+        } else {
+            int_isOnline = 0
+        }
+
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, From) VALUES (?, ?, ?, ?, ?, ?)")) {
+                "\"INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, From) VALUES (?, ?, ?, ?, ?, ?)\"")) {
             statement.setString(1, ID);
             statement.setString(2, IP);
             statement.setInt(3, Reason);
             statement.setString(4, Reason_Text);
-            statement.setBoolean(5, isOnline);
+            statement.setInt(5, int_isOnline);
             statement.setString(6, From);
             statement.executeUpdate();
             getLogger().info("Added a new row to the UnionBan table.");
@@ -129,9 +135,16 @@ public class Main extends JavaPlugin {
         }
         return null;
     }
-    
+
     private void banPlayer(String banTarget) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban " + banTarget);
+
+        if (banTarget.contains(".")) {
+            // Ban by player ip
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban-ip " + banTarget);
+        } else {
+            // Ban by player ID
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban " + banTarget);
+        }
     }
 
     private boolean isPlayerBanned(Player player) {
