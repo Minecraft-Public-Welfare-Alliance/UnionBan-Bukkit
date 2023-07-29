@@ -1,4 +1,4 @@
-package top.baimoqilin.mpwaunionban
+package top.baimoqilin.mpwaunionban;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -81,7 +81,6 @@ public class UnionBanPlugin extends JavaPlugin {
         return 0;
     }
 
-    private void addRow(String ID, String IP, int Reason, String Reason_Text, boolean isOnline, String From) {
     private void addRow(String ID, String IP, int Reason, String Reason_Text, boolean isOnline, String From) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, From) VALUES (?, ?, ?, ?, ?, ?)")) {
