@@ -98,7 +98,38 @@ public class Main extends JavaPlugin {
     }
 
     private void checkForBannedPlayers() {
-        // 未完成
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM UnionBan")) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String playerID = resultSet.getString("ID");
+                String playerIP = resultSet.getString("IP");
+                if (!isPlayerBanned(player)) {
+                    // Player is not banned, determine whether to ban by IP or ID
+                    if (playerIP.equalsIgnoreCase("UNKNOWN")) {
+                        // Ban by ID
+                        banPlayer(playerID);
+                    } else {
+                        // Ban by IP
+                        banPlayer(playerIP);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            getLogger().severe("Error checking for banned players: " + e.getMessage());
+        }
+    }
+
+    private Player getPlayerByID(String playerID) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getUniqueId().toString().equals(playerID)) {
+                return player;
+            }
+        }
+        return null;
+    }
+    
+    private void banPlayer(String banTarget) {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban " + banTarget);
     }
 
     private boolean isPlayerBanned(Player player) {
