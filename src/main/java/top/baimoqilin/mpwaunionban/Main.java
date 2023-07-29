@@ -103,6 +103,8 @@ public class Main extends JavaPlugin {
             while (resultSet.next()) {
                 String playerID = resultSet.getString("ID");
                 String playerIP = resultSet.getString("IP");
+                Player player = getPlayerByID(playerID);
+                
                 if (!isPlayerBanned(player)) {
                     // Player is not banned, determine whether to ban by IP or ID
                     if (playerIP.equalsIgnoreCase("UNKNOWN")) {
