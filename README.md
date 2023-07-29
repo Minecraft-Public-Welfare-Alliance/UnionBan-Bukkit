@@ -21,7 +21,7 @@ UnionBanPlugin 是一个 Bukkit 插件，使用 MySQL 数据库在多个服务�
 
 - `database`：数据库连接详细信息（主机、端口、数据库名称、用户名、密码）
 - `banCheckInterval`：刷新封禁列表的时间间隔（以秒为单位）
-- `from`：标识禁止发起的服务器
+- `from`：标识封禁玩家的服务器
 
 ## 贡献者
 
