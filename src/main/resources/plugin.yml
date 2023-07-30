@@ -1,6 +1,6 @@
 name: UnionBanPlugin
 version: 1.0.2
-main: top.baimoqilin.mpwaunionban.UnionBanPlugin
+main: top.baimoqilin.mpwaunionban.Main
 author: BaimoQilin
 description: A plugin for banning players across multiple servers.
 
