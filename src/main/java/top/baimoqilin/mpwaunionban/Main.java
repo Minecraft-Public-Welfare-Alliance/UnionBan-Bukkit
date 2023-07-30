@@ -138,13 +138,15 @@ public class Main extends JavaPlugin {
 
     private void banPlayer(String banTarget) {
 
-        if (banTarget.contains(".")) {
-            // Ban by player ip
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban-ip " + banTarget);
-        } else {
-            // Ban by player ID
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban " + banTarget);
-        }
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (banTarget.contains(".")) {
+                // Ban by player ip
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban-ip " + banTarget);
+            } else {
+                // Ban by player ID
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban " + banTarget);
+            }
+        });
     }
 
     private boolean isPlayerBanned(Player player) {
