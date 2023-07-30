@@ -111,15 +111,15 @@ public class Main extends JavaPlugin {
                 String playerID = resultSet.getString("ID");
                 String playerIP = resultSet.getString("IP");
                 Player player = getPlayerByID(playerID);
-                
+
                 if (!isPlayerBanned(player)) {
                     // Player is not banned, determine whether to ban by IP or ID
                     if (playerIP.equalsIgnoreCase("UNKNOWN")) {
                         // Ban by ID
-                        banPlayer(playerID);
+                        banPlayer(this, playerID);
                     } else {
                         // Ban by IP
-                        banPlayer(playerIP);
+                        banPlayer(this, playerIP);
                     }
                 }
             }
@@ -137,8 +137,7 @@ public class Main extends JavaPlugin {
         return null;
     }
 
-    private void banPlayer(String banTarget) {
-
+    private void banPlayer(Plugin plugin, String banTarget) {
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (banTarget.contains(".")) {
                 // Ban by player ip
