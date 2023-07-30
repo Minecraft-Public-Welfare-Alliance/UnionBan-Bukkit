@@ -91,7 +91,7 @@ public class Main extends JavaPlugin {
         }
 
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, From) VALUES (?, ?, ?, ?, ?, ?)")) {
+                "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, `From`) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, ID);
             statement.setString(2, IP);
             statement.setInt(3, Reason);
