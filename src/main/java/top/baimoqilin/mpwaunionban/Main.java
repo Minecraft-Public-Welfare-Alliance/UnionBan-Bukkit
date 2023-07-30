@@ -83,9 +83,9 @@ public class Main extends JavaPlugin {
 
     private void addRow(String ID, String IP, int Reason, String Reason_Text, boolean isOnline, String From) {
         if (isOnline) {
-            int_isOnline = 1
+            int_isOnline = 1;
         } else {
-            int_isOnline = 0
+            int_isOnline = 0;
         }
 
         try (PreparedStatement statement = connection.prepareStatement(
