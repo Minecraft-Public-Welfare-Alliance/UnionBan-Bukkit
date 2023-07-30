@@ -1,5 +1,5 @@
-name: UnionBanPlugin
-version: 1.0.2
+name: MPWAUnionBan
+version: 1.0.3
 main: top.baimoqilin.mpwaunionban.Main
 author: BaimoQilin
 description: A plugin for banning players across multiple servers.
@@ -8,3 +8,6 @@ commands:
   uban:
     description: 联合封禁
     usage: /uban <playerID> <Reason(hacking, stealing, destroying, other)> <Reason_Text> <isOnline>
+  uban-reload:
+    description:  重载配置
+    usage: /uban-reload

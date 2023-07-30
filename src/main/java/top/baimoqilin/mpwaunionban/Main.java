@@ -27,6 +27,7 @@ public class Main extends JavaPlugin {
         getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkForBannedPlayers, 0L, banCheckInterval);
 
         getCommand("uban").setExecutor(this);
+        getCommand("uban-reload").setExecutor(this);
     }
 
     @Override
@@ -90,7 +91,7 @@ public class Main extends JavaPlugin {
         }
 
         try (PreparedStatement statement = connection.prepareStatement(
-                "\"INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, From) VALUES (?, ?, ?, ?, ?, ?)\"")) {
+                "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, From) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, ID);
             statement.setString(2, IP);
             statement.setInt(3, Reason);
@@ -214,6 +215,17 @@ public class Main extends JavaPlugin {
                 addRow(playerID, "UNKNOWN", reason, reasonText, isOnline, fromServer);
                 sender.sendMessage("Successfully added a new row to the UnionBan table.");
             }
+            return true;
+        } else if (command.getName().equalsIgnoreCase("uban-reload")) {
+            if (!sender.hasPermission("unionban.reload")) {
+                sender.sendMessage("You don't have permission to use this command.");
+                return true;
+            }
+
+            // Reload configuration
+            reloadConfig();
+            loadConfiguration();
+            sender.sendMessage("Configuration reloaded!");
 
             return true;
         }
