@@ -148,6 +148,10 @@ public class Main extends JavaPlugin {
     }
 
     private boolean isPlayerBanned(Player player) {
+        if (player == null) {
+            return false;
+        }
+
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM UnionBan WHERE ID=? OR IP=?")) {
             statement.setString(1, player.getUniqueId().toString());
