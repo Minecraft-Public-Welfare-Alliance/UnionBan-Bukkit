@@ -1,19 +1,20 @@
 package top.baimoqilin.mpwaunionban;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements CommandExecutor {
     private Connection connection;
     private String host, port, database, username, password, fromServer;
     private int banCheckInterval, int_isOnline;
+    private long storedVersion = -1L;
 
     @Override
     public void onEnable() {
@@ -24,7 +25,7 @@ public class Main extends JavaPlugin {
         connectToDatabase();
 
         // Schedule ban check task
-        getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkForBannedPlayers, 0L, banCheckInterval);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkForUpdatesAndBannedPlayers, 0L, banCheckInterval);
 
         getCommand("uban").setExecutor(this);
         getCommand("uban-reload").setExecutor(this);
@@ -105,6 +106,44 @@ public class Main extends JavaPlugin {
         }
     }
 
+    private void checkForUpdatesAndBannedPlayers() {
+        if (storedVersion == -1L) {
+            storedVersion = getVersionFromDatabase();
+            return;
+        }
+
+        long currentVersion = getVersionFromDatabase();
+        if (currentVersion > storedVersion) {
+            // New version detected, execute checkForBannedPlayers
+            checkForBannedPlayers();
+            updateStoredVersion(currentVersion);
+        }
+    }
+
+    private long getVersionFromDatabase() {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT Version FROM info LIMIT 1")) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getLong("Version");
+            }
+        } catch (SQLException e) {
+            getLogger().severe("Error retrieving version from info table: " + e.getMessage());
+        }
+        return -1L;
+    }
+
+    private void updateStoredVersion(long newVersion) {
+        storedVersion = newVersion;
+
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE info SET Version = ?")) {
+            statement.setLong(1, newVersion);
+            statement.executeUpdate();
+            getLogger().info("Updated stored version in the info table.");
+        } catch (SQLException e) {
+            getLogger().severe("Error updating stored version in the info table: " + e.getMessage());
+        }
+    }
+
     private void checkForBannedPlayers() {
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM UnionBan")) {
             ResultSet resultSet = statement.executeQuery();
@@ -142,10 +181,10 @@ public class Main extends JavaPlugin {
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (banTarget.contains(".")) {
                 // Ban by player ip
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban-ip " + banTarget);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban-ip " + banTarget);
             } else {
                 // Ban by player ID
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/ban " + banTarget);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + banTarget);
             }
         });
     }
