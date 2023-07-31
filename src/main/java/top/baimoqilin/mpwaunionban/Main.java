@@ -91,6 +91,10 @@ public class Main extends JavaPlugin implements CommandExecutor {
             int_isOnline = 0;
         }
 
+        // Increase the version by one in the database
+        long newVersion = getVersionFromDatabase() + 1;
+        updateVersionInDatabase(newVersion);
+
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, `From`) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, ID);
@@ -141,6 +145,16 @@ public class Main extends JavaPlugin implements CommandExecutor {
             getLogger().info("Updated stored version in the info table.");
         } catch (SQLException e) {
             getLogger().severe("Error updating stored version in the info table: " + e.getMessage());
+        }
+    }
+
+    private void updateVersionInDatabase(long newVersion) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE info SET Version = ?")) {
+            statement.setLong(1, newVersion);
+            statement.executeUpdate();
+            getLogger().info("Updated version in the info table.");
+        } catch (SQLException e) {
+            getLogger().severe("Error updating version in the info table: " + e.getMessage());
         }
     }
 
