@@ -1,5 +1,5 @@
 name: MPWAUnionBan
-version: 1.0.3
+version: 1.0.4
 main: top.baimoqilin.mpwaunionban.Main
 author: BaimoQilin
 description: A plugin for banning players across multiple servers.
