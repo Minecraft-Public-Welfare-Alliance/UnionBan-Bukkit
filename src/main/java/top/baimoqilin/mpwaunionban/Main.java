@@ -96,7 +96,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
         updateVersionInDatabase(newVersion);
 
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO unionban (ID, IP, Reason, Reason_Text, isOnline, `From`) VALUES (?, ?, ?, ?, ?, ?)")) {
+                "INSERT INTO unionban.unionban (ID, IP, Reason, Reason_Text, isOnline, `From`) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, ID);
             statement.setString(2, IP);
             statement.setInt(3, Reason);
