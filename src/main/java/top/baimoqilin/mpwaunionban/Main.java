@@ -14,7 +14,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
     private Connection connection;
     private String host, port, database, username, password, fromServer;
     private int banCheckInterval, int_isOnline;
-    private long storedVersion = -1L;
+    private long storedVersion = 0;
 
     @Override
     public void onEnable() {
@@ -55,9 +55,9 @@ public class Main extends JavaPlugin implements CommandExecutor {
         try {
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" +
                     database + "?useSSL=false", username, password);
-            getLogger().info("Connected to the MySQL database.");
+            getLogger().info("[UnionBan] Connected to the MySQL database.");
         } catch (SQLException e) {
-            getLogger().severe("Failed to connect to the MySQL database: " + e.getMessage());
+            getLogger().severe("[UnionBan] Failed to connect to the MySQL database: " + e.getMessage());
         }
     }
 
@@ -65,10 +65,10 @@ public class Main extends JavaPlugin implements CommandExecutor {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                getLogger().info("Disconnected from the MySQL database.");
+                getLogger().info("[UnionBan] Disconnected from the MySQL database.");
             }
         } catch (SQLException e) {
-            getLogger().severe("Failed to disconnect from the MySQL database: " + e.getMessage());
+            getLogger().severe("[UnionBan] Failed to disconnect from the MySQL database: " + e.getMessage());
         }
     }
 
@@ -79,7 +79,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
                 return resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            getLogger().severe("Error retrieving row count: " + e.getMessage());
+            getLogger().severe("[UnionBan] Error retrieving row count: " + e.getMessage());
         }
         return 0;
     }
@@ -104,16 +104,16 @@ public class Main extends JavaPlugin implements CommandExecutor {
             statement.setInt(5, int_isOnline);
             statement.setString(6, From);
             statement.executeUpdate();
-            getLogger().info("Added a new row to the UnionBan table.");
+            getLogger().info("[UnionBan] Added a new row to the UnionBan table.");
         } catch (SQLException e) {
-            getLogger().severe("Error adding a row to the UnionBan table: " + e.getMessage());
+            getLogger().severe("[UnionBan] Error adding a row to the UnionBan table: " + e.getMessage());
         }
     }
 
     private void checkForUpdatesAndBannedPlayers() {
-        if (storedVersion == -1L) {
+        if (storedVersion == 0) {
             storedVersion = getVersionFromDatabase();
-            return;
+            getLogger().info("[UnionBan] Loading version information...");
         }
 
         long currentVersion = getVersionFromDatabase();
@@ -128,12 +128,13 @@ public class Main extends JavaPlugin implements CommandExecutor {
         try (PreparedStatement statement = connection.prepareStatement("SELECT Version FROM unionban.info LIMIT 1")) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                getLogger().info("[UnionBan] Updated version.");
                 return resultSet.getLong("Version");
             }
         } catch (SQLException e) {
-            getLogger().severe("Error retrieving version from info table: " + e.getMessage());
+            getLogger().severe("[UnionBan] Error retrieving version from info table: " + e.getMessage());
         }
-        return -1L;
+        return 0;
     }
 
     private void updateStoredVersion(long newVersion) {
@@ -142,9 +143,9 @@ public class Main extends JavaPlugin implements CommandExecutor {
         try (PreparedStatement statement = connection.prepareStatement("UPDATE unionban.info SET Version = ?")) {
             statement.setLong(1, newVersion);
             statement.executeUpdate();
-            getLogger().info("Updated stored version in the info table.");
+            getLogger().info("[UnionBan] Updated stored version in the info table.");
         } catch (SQLException e) {
-            getLogger().severe("Error updating stored version in the info table: " + e.getMessage());
+            getLogger().severe("[UnionBan] Error updating stored version in the info table: " + e.getMessage());
         }
     }
 
@@ -152,9 +153,9 @@ public class Main extends JavaPlugin implements CommandExecutor {
         try (PreparedStatement statement = connection.prepareStatement("UPDATE unionban.info SET Version = ?")) {
             statement.setLong(1, newVersion);
             statement.executeUpdate();
-            getLogger().info("Updated version in the info table.");
+            getLogger().info("[UnionBan] Updated version in the info table.");
         } catch (SQLException e) {
-            getLogger().severe("Error updating version in the info table: " + e.getMessage());
+            getLogger().severe("[UnionBan] Error updating version in the info table: " + e.getMessage());
         }
     }
 
@@ -178,7 +179,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
                 }
             }
         } catch (SQLException e) {
-            getLogger().severe("Error checking for banned players: " + e.getMessage());
+            getLogger().severe("[UnionBan] Error checking for banned players: " + e.getMessage());
         }
     }
 
@@ -215,7 +216,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
-            getLogger().severe("Error checking ban status for player " + player.getName() + ": " + e.getMessage());
+            getLogger().severe("[UnionBan] Error checking ban status for player " + player.getName() + ": " + e.getMessage());
         }
         return false;
     }
@@ -239,19 +240,19 @@ public class Main extends JavaPlugin implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("uban")) {
             if (!sender.hasPermission("unionban.uban")) {
-                sender.sendMessage("You don't have permission to use this command.");
+                sender.sendMessage("[UnionBan] You don't have permission to use this command.");
                 return true;
             }
 
             if (args.length < 4) {
-                sender.sendMessage("Usage: /uban <playerID> <Reason(hacking, stealing, destroying, other)> <Reason_Text> <isOnline>");
+                sender.sendMessage("[UnionBan] Usage: /uban <playerID> <Reason(hacking, stealing, destroying, other)> <Reason_Text> <isOnline>");
                 return true;
             }
 
             String playerID = args[0];
             int reason = getReason(args[1]);
             if (reason == -1) {
-                sender.sendMessage("Invalid reason. Available reasons: hacking, stealing, destroying, other.");
+                sender.sendMessage("[UnionBan] Invalid reason. Available reasons: hacking, stealing, destroying, other.");
                 return true;
             }
             String reasonText = args[2];
@@ -262,23 +263,23 @@ public class Main extends JavaPlugin implements CommandExecutor {
                 // The target player is online
                 addRow(target.getUniqueId().toString(), target.getAddress().getAddress().getHostAddress(),
                         reason, reasonText, isOnline, fromServer);
-                sender.sendMessage("Successfully added a new row to the UnionBan table.");
+                sender.sendMessage("[UnionBan] Successfully added a new row to the UnionBan table.");
             } else {
                 // The target player is not online
                 addRow(playerID, "UNKNOWN", reason, reasonText, isOnline, fromServer);
-                sender.sendMessage("Successfully added a new row to the UnionBan table.");
+                sender.sendMessage("[UnionBan] Successfully added a new row to the UnionBan table.");
             }
             return true;
         } else if (command.getName().equalsIgnoreCase("uban-reload")) {
             if (!sender.hasPermission("unionban.reload")) {
-                sender.sendMessage("You don't have permission to use this command.");
+                sender.sendMessage("[UnionBan] You don't have permission to use this command.");
                 return true;
             }
 
             // Reload configuration
             reloadConfig();
             loadConfiguration();
-            sender.sendMessage("Configuration reloaded!");
+            sender.sendMessage("[UnionBan] Configuration reloaded!");
 
             return true;
         }
