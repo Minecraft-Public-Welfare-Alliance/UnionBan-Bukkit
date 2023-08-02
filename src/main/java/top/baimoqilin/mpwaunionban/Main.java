@@ -73,7 +73,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
     }
 
     private int getRows() {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM UnionBan")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM unionban")) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
@@ -96,7 +96,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
         updateVersionInDatabase(newVersion);
 
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO UnionBan (ID, IP, Reason, Reason_Text, isOnline, `From`) VALUES (?, ?, ?, ?, ?, ?)")) {
+                "INSERT INTO unionban (ID, IP, Reason, Reason_Text, isOnline, `From`) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, ID);
             statement.setString(2, IP);
             statement.setInt(3, Reason);
@@ -159,7 +159,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
     }
 
     private void checkForBannedPlayers() {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM UnionBan")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM unionban")) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String playerID = resultSet.getString("ID");
