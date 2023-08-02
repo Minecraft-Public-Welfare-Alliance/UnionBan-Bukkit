@@ -125,7 +125,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
     }
 
     private long getVersionFromDatabase() {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT Version FROM info LIMIT 1")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT Version FROM unionban.info LIMIT 1")) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getLong("Version");
@@ -139,7 +139,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
     private void updateStoredVersion(long newVersion) {
         storedVersion = newVersion;
 
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE info SET Version = ?")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE unionban.info SET Version = ?")) {
             statement.setLong(1, newVersion);
             statement.executeUpdate();
             getLogger().info("Updated stored version in the info table.");
@@ -149,7 +149,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
     }
 
     private void updateVersionInDatabase(long newVersion) {
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE info SET Version = ?")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE unionban.info SET Version = ?")) {
             statement.setLong(1, newVersion);
             statement.executeUpdate();
             getLogger().info("Updated version in the info table.");
